@@ -6,7 +6,7 @@ fn main() {
     let args: Vec<String> = std::env::args().collect();
     if args.len() < 2 {
         println!("Example usage:");
-        println!("$ sudo ./target/debug/pps-time /dev/pps0");
+        println!("$ sudo ./target/debug/examples/main /dev/pps0");
         return;
     }
 
