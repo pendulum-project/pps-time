@@ -33,7 +33,7 @@ impl PpsDevice {
         }
     }
 
-    /// Perform ioctl request with uninitialized data
+    /// Perform ioctl request with uninitialized memory
     unsafe fn ioctl_uninit<T>(&self, request: c_ulong) -> Result<T> {
         let mut value: MaybeUninit<T> = MaybeUninit::uninit();
         self.ioctl(request, &mut value)?;
@@ -41,14 +41,17 @@ impl PpsDevice {
     }
 
     pub fn get_params(&self) -> Result<pps_kparams> {
+        // Safety: PPS_GETPARAMS writes pps_kparams, for which memory is allocated and returned by ioctl_uninit
         unsafe { self.ioctl_uninit(PPS_GETPARAMS) }
     }
 
     pub fn set_params(&self, params: &mut pps_kparams) -> Result<()> {
+        // Safety: PPS_SETPARAMS expects pps_kparams, which lives for the duration of the call
         unsafe { self.ioctl(PPS_SETPARAMS, params) }
     }
 
     pub fn get_cap(&self) -> Result<c_uint> {
+        // Safety: PPS_GETCAP writes a c_uint, for which memory is allocated and returned by ioctl_uninit
         unsafe { self.ioctl_uninit(PPS_GETCAP) }
     }
 
@@ -64,6 +67,7 @@ impl PpsDevice {
             timeout,
         };
 
+        // Safety: PPS_FETCH expects and writes to a pps_fdata, which lives for the duration of the call
         unsafe { self.ioctl(PPS_FETCH, &mut data)? };
 
         Ok(data)
