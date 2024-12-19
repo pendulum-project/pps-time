@@ -55,13 +55,7 @@ impl PpsDevice {
         unsafe { self.ioctl_uninit(PPS_GETCAP) }
     }
 
-    pub fn fetch(&self, timeout: Option<pps_ktime>) -> Result<pps_fdata> {
-        let timeout = timeout.unwrap_or(pps_ktime {
-            sec: 0,
-            nsec: 0,
-            flags: PPS_TIME_INVALID,
-        });
-
+    fn fetch(&self, timeout: pps_ktime) -> Result<pps_fdata> {
         let mut data = pps_fdata {
             info: Default::default(),
             timeout,
@@ -71,5 +65,36 @@ impl PpsDevice {
         unsafe { self.ioctl(PPS_FETCH, &mut data)? };
 
         Ok(data)
+    }
+
+    /// Fetch next PPS event, blocking until it arrives
+    ///
+    /// Device must support PPS_CANWAIT, otherwise it will give an EOPNOTSUPP error
+    pub fn fetch_blocking(&self) -> Result<pps_fdata> {
+        self.fetch(pps_ktime {
+            sec: 0,
+            nsec: 0,
+            flags: PPS_TIME_INVALID,
+        })
+    }
+
+    /// Fetch next PPS event with a timeout, giving an ETIMEDOUT error if event does not come in time
+    ///
+    /// Device must support PPS_CANWAIT, otherwise it will give an EOPNOTSUPP error
+    pub fn fetch_timeout(&self, seconds: i64, nanoseconds: i32) -> Result<pps_fdata> {
+        self.fetch(pps_ktime {
+            sec: seconds,
+            nsec: nanoseconds,
+            flags: 0,
+        })
+    }
+
+    /// Fetch newest PPS event without blocking
+    pub fn fetch_non_blocking(&self) -> Result<pps_fdata> {
+        self.fetch(pps_ktime {
+            sec: 0,
+            nsec: 0,
+            flags: 0,
+        })
     }
 }

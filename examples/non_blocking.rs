@@ -2,11 +2,13 @@ use pps_time::{pps, PpsDevice};
 use std::path::PathBuf;
 
 /// A simple PPS demo program
+///
+/// Build with `cargo build --package pps-time --example non_blocking`
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     if args.len() < 2 {
         println!("Example usage:");
-        println!("$ sudo ./target/debug/examples/main /dev/pps0");
+        println!("$ sudo ./target/debug/examples/non_blocking /dev/pps0");
         return;
     }
 
@@ -36,13 +38,8 @@ fn main() {
 
     pps.set_params(&mut params).expect("Could not set params!");
 
-    if capabilities & pps::PPS_CANWAIT == 0 {
-        println!("Cannot CANWAIT");
-        return;
-    }
-
     loop {
-        let data = pps.fetch(None).expect("Could not fetch!");
+        let data = pps.fetch_non_blocking().expect("Could not fetch!");
         println!("{:#?}", data);
     }
 }
