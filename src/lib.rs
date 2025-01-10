@@ -27,7 +27,7 @@ impl PpsDevice {
 
     /// Perform ioctl request and check result for possible errors
     unsafe fn ioctl<T>(&self, request: c_ulong, value: &mut T) -> Result<()> {
-        match libc::ioctl(self.0.as_raw_fd(), request, value) {
+        match libc::ioctl(self.0.as_raw_fd(), request as _, value) {
             0 => Ok(()),
             _ => Err(Error::last_os_error()),
         }
