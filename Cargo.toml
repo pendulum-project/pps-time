@@ -8,4 +8,4 @@ repository = "https://github.com/pendulum-project/pps-time"
 homepage = "https://github.com/pendulum-project/pps-time"
 
 [dependencies]
-libc = "0.2.168"
+libc = "0.2.145"
