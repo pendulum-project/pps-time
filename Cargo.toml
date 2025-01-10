@@ -1,7 +1,7 @@
 [package]
 name = "pps-time"
 description = "A Rust interface for PPS devices"
-version = "0.2.2"
+version = "0.2.3"
 edition = "2021"
 license = "Apache-2.0 OR MIT"
 repository = "https://github.com/pendulum-project/pps-time"
