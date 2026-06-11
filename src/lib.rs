@@ -6,7 +6,7 @@ use std::{
         fd::AsRawFd,
         raw::{c_uint, c_ulong},
     },
-    path::PathBuf,
+    path::Path,
 };
 
 pub mod pps;
@@ -21,7 +21,7 @@ const PPS_FETCH: c_ulong = 0xc00870a4;
 pub struct PpsDevice(File);
 
 impl PpsDevice {
-    pub fn new(path: PathBuf) -> Result<PpsDevice> {
+    pub fn new<P: AsRef<Path>>(path: P) -> Result<PpsDevice> {
         Ok(PpsDevice(File::open(path)?))
     }
 
