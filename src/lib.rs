@@ -3,7 +3,7 @@ use std::{
     io::{Error, Result},
     mem::MaybeUninit,
     os::{
-        fd::AsRawFd,
+        fd::{AsRawFd, RawFd},
         raw::{c_uint, c_ulong},
     },
     path::PathBuf,
@@ -96,5 +96,11 @@ impl PpsDevice {
             nsec: 0,
             flags: 0,
         })
+    }
+}
+
+impl AsRawFd for PpsDevice {
+    fn as_raw_fd(&self) -> RawFd {
+        self.0.as_raw_fd()
     }
 }
